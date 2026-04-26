@@ -38,10 +38,20 @@ class Character(ABC):
         if self.exp >= self.level * 50:
             self.level_up()
 
-    def level_up (self) :
-       self.level += 1
-       self.attack += 2
-       self.hp += 2
-       self.defense += 2
-       self.exp = 0
-       print(f'персонаж {self.name} повышает уровень до {self.level} и повышает характеристики : здоровье {self.hp},урон{self.attack},зашита{self.defense}')
+    def level_up(self):
+        self.level += 1
+        self.attack += 2
+        self.hp += 2
+        self.defense += 2
+        self.exp = 0
+        print(
+            f'персонаж {self.name} повышает уровень до {self.level} и повышает характеристики : здоровье {self.hp},урон{self.attack},зашита{self.defense}')
+
+    def show_inv(self):
+        i = 0
+        if not self._inventory:
+            print('у вас нечего нет')
+        else:
+            for e in self._inventory:
+                i += 1
+                print(f"{i}.{e}")
