@@ -4,9 +4,10 @@ from abc import ABC, abstractmethod
 
 
 class Character(ABC):
-    def __init__(self, name, hp, attack, defense, exp, level, creet_chans):
+    def __init__(self, name, hp, attack, defense, exp, level, creet_chans,max_hp):
         self.name = name
         self.hp = hp
+        self.max_hp = max_hp
         self.attack = attack
         self.defense = defense
         self.exp = exp
@@ -42,9 +43,12 @@ class Character(ABC):
     def level_up(self):
         self.level += 1
         self.attack += 2
-        self.hp += 2
+        self.max_hp += 2
+        self.hp = self.max_hp
         self.defense += 2
         self.exp = 0
+        self.creet_chans += 0.05
+
         print(
             f'персонаж {self.name} повышает уровень до {self.level} и повышает характеристики : здоровье {self.hp},урон{self.attack},зашита{self.defense}')
 
@@ -58,7 +62,7 @@ class Character(ABC):
                 print(f"{i}.{e}")
 
     def __str__(self):
-        return f'твоё имя - {self.name} у вас {self.hp} здоровьья вы бьёте с силой {self.attack} у вас такая защита {self.defense} у вас столко опыта {self.exp}и вы на {self.level} левле'
+        return f'твоё имя - {self.name} у вас {self.hp}/{self.max_hp} здоровьья вы бьёте с силой {self.attack} у вас такая защита {self.defense} у вас столко опыта {self.exp}и вы на {self.level} левле'
 
 
 class Item(ABC):
@@ -86,10 +90,97 @@ class Warrior(Character):
         dmg = self.get_attack_power()
         creet = random.randint(1, 100)
         if creet <= self.creet_chans and self.rage == 50:
-            target.hp -= dmg * 2 * 2
+            now_dmg = dmg * 2 * 2
+            self.rage = 0
+        elif self.rage == 50:
+            now_dmg = dmg * 2
+            self.rage = 0
+        elif creet <= self.creet_chans:
+            now_dmg = dmg * 2
             self.rage += 1
-        elif self.rage == 50 or creet <= self.creet_chans:
-            target.hp -= dmg * 2
         else:
-            target.hp -= dmg
+            now_dmg = dmg
             self.rage += 1
+        self.take_damage(now_dmg)
+        return now_dmg
+
+
+class Magician(Character):
+    def __init__(self, name):
+        super().__init__(name, hp=1, attack=5, defense=2, creet_chans=8)
+        self.mana = 50
+        self.max_mana = 100
+
+    def get_attack_power(self):
+        return self.attack
+
+    def attack_target(self, target):
+        dmg = self.get_attack_power()
+        creet = random.randint(1, 100)
+        if creet <= self.creet_chans:
+            now_dmg = dmg * 2
+        else:
+            now_dmg = dmg
+
+        if self.mana >= 50:
+            activation = input('включить супер атаку(1)')
+            if activation == 1:
+                now_dmg = dmg * 3
+                self.mana -= 50
+
+        self.mana_regen()
+        self.take_damage(now_dmg)
+        return now_dmg
+
+    def mana_regen(self):
+        self.mana += 7
+        if self.mana >= 50:
+            print(f'у игрока{self.name} {self.mana} маны')
+
+    # вызываем add_max_mana через проверку isinstance в функции битвы
+    def add_max_mana(self):
+        level = 0
+        if self.level >= level:
+            self.level = level
+            self.max_mana += 25
+
+
+class Archer(Character):
+    def __init__(self, name):
+        super().__init__(name, hp=3, attack=4, defense=3, creet_chans=17)
+        self.accuracy = 10
+
+    def get_attack_power(self):
+        return self.attack
+
+    def attack_target(self, target):
+        dmg = self.get_attack_power()
+        creet = random.randint(1, 100)
+        accuracy_func = random.randint(1, 100)
+        add_dmg = 0
+        if accuracy_func <= self.accuracy:
+            add_dmg = dmg + dmg
+        if creet <= self.creet_chans:
+            now_dmg = dmg * 2 + add_dmg
+        else:
+            now_dmg = dmg
+        self.take_damage(now_dmg)
+        return now_dmg
+
+    # вызываем add_accuracy через проверку isinstance в функции битвы
+    def add_accuracy(self):
+        level = 0
+        if self.level >= level:
+            self.level = level
+            self.accuracy += 2
+
+
+class HealingPotion(Item):
+    def __init__(self,amount = 4):
+        super().__init__(f'зелье здоровья (+{amount} hp)',f"(восстанавливает {amount} hp)")
+        self.amount = amount
+    def use(self, character) :
+        max_hp = character.max_hp
+        character.hp += self.amount
+        if character.hp > max_hp :
+            character.hp = max_hp
