@@ -1,13 +1,16 @@
 import random
 import time
 from abc import ABC, abstractmethod
+from os import name
 
 
 class Character(ABC):
-    def __init__(self, name, hp, attack, defense, exp, level, creet_chans,max_hp):
+    def __init__(self, name, hp, attack, defense, exp, level, creet_chans, mana, max_mana):
         self.name = name
+        self.max_mana = mana
+        self.mana = mana
         self.hp = hp
-        self.max_hp = max_hp
+        self.max_hp = hp
         self.attack = attack
         self.defense = defense
         self.exp = exp
@@ -107,9 +110,7 @@ class Warrior(Character):
 
 class Magician(Character):
     def __init__(self, name):
-        super().__init__(name, hp=1, attack=5, defense=2, creet_chans=8)
-        self.mana = 50
-        self.max_mana = 100
+        super().__init__(name, hp=1, attack=5, defense=2, creet_chans=8, mana=50, max_mana=100)
 
     def get_attack_power(self):
         return self.attack
@@ -176,11 +177,118 @@ class Archer(Character):
 
 
 class HealingPotion(Item):
-    def __init__(self,amount = 4):
-        super().__init__(f'зелье здоровья (+{amount} hp)',f"(восстанавливает {amount} hp)")
+    def __init__(self, amount=4):
+        super().__init__(f'зелье здоровья (+{amount} hp)',
+                            f"Редкая гадость:  острый перец и фарментированые (гнилые) помидоры (восстанавливает {amount} hp).")
         self.amount = amount
-    def use(self, character) :
+
+    def use(self, character):
         max_hp = character.max_hp
         character.hp += self.amount
-        if character.hp > max_hp :
+        if character.hp > max_hp:
             character.hp = max_hp
+        print(f"{character.name} востанавливает себе {self.amount} hp")
+        return True
+
+
+class ManaPotion(Item):
+    def __init__(self, amount=4):
+        super().__init__(f'зелье маны (+{amount} hp)', f'востанавливает {amount} маны')
+        self.amount = amount
+
+    def use(self, character):
+        max_mana = character.max_mana
+        character.mana += self.amount
+        if character.mana > max_mana:
+            character.mana = max_mana
+            print(f"{character.name} востанавливает себе {self.amount} маны")
+        return True
+
+
+class Enemy(Character):
+    def __init__(self, name, hp, attack, defense, exp):
+        super().__init__(name, hp, attack, defense)
+        self.exp = exp
+
+    def attack_target(self, target):
+        damage = self.get_attack_power()
+        creet = random.randint(1, 100)
+        if creet <= 8:
+            damage *= 2
+            print(f'{self.name} наносит крит удар по голове с тройным разворотом со спины')
+        return target.take_damage(damage)
+
+
+class AngryTeacher(Enemy):
+    def __init__(self, name):
+        super().__init__(name, hp=3, attack=4, defense=3, exp=4)
+
+    def attack_target(self, target):
+        creet = random.randint(1, 100)
+        first_time = 0
+
+        while first_time == 2:
+            time.sleep(0.5)
+
+            if creet <= 8:
+                damage = self.get_attack_power()
+                first_time += 1
+                print(f'{self.name} наносит крит удар по голове с тройным разворотом со спины')
+            else:
+                damage = self.get_attack_power()
+                damage /= 2
+                print(f'{self.name} наносит удар')
+        return target.take_damage(damage)
+
+
+class EnemyOnBackOfTheClass(Enemy):
+    def __init__(self, name):
+        super().__init__(name, hp=4, attack=4, defense=2, exp=6)
+        self.chose = random.randint(1, 3)
+
+    def attack_target(self, target):
+        creet = random.randint(1, 100)
+        # dodge = random.randint(1, 100)
+
+        if creet <= 8:
+            damage = self.get_attack_power()
+            damage *= 2
+            print(f'{self.name} наносит крит удар по голове с тройным разворотом со спины')
+        else:
+            damage = self.get_attack_power()
+            print(f'{self.name} наносит удар')
+        # if dodge <= 14 :
+        # return target.take_damage ()
+        return target.take_damage(damage)
+
+
+class Game_Main:
+    def __init__(self):
+        self.player = None
+        self.enemy = None
+        self.game_over = False
+        self.count = 0
+
+    def create_player(self):
+        print('создание персонажа из нечего (просто порох взорвался)')
+
+        while True:
+            chose_player = input('ведите 1 чтобы выбрать лучника , 2 чтоб мага и 3 чтоб воина')
+            if chose_player == '1':
+                name = input('скажите ваше ИМЯ НЕМЕДЛЕНО')
+                self.player = Archer(name)
+                print(f'ВЫ СОЗДАЛИ ЛУЧНИКА С ИМЕНЕМ {self.player.name}')
+                break
+            elif chose_player == '2':
+                name = input('скажите ваше ИМЯ НЕМЕДЛЕНО')
+                self.player = Magician(name)
+                print(f'ВЫ СОЗДАЛИ МАГА С ИМЕНЕМ {self.player.name}')
+                break
+            elif chose_player == '3':
+                name = input('скажите ваше ИМЯ НЕМЕДЛЕНО')
+                self.player = Warrior(name)
+                print(f'ВЫ СОЗДАЛИ ВОИНА С ИМЕНЕМ {self.player.name}')
+                break
+            else :
+                print(f'Я СКАЗАЛ 123, а не {chose_player}!')
+        print(self.player)
