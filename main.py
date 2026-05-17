@@ -179,7 +179,7 @@ class Archer(Character):
 class HealingPotion(Item):
     def __init__(self, amount=4):
         super().__init__(f'зелье здоровья (+{amount} hp)',
-                            f"Редкая гадость:  острый перец и фарментированые (гнилые) помидоры (восстанавливает {amount} hp).")
+                         f"Редкая гадость:  острый перец и фарментированые (гнилые) помидоры (восстанавливает {amount} hp).")
         self.amount = amount
 
     def use(self, character):
@@ -220,7 +220,7 @@ class Enemy(Character):
 
 
 class AngryTeacher(Enemy):
-    def __init__(self, name):
+    def __init__(self, name='Злой (м)учитель'):
         super().__init__(name, hp=3, attack=4, defense=3, exp=4)
 
     def attack_target(self, target):
@@ -242,7 +242,7 @@ class AngryTeacher(Enemy):
 
 
 class EnemyOnBackOfTheClass(Enemy):
-    def __init__(self, name):
+    def __init__(self, name='враг с задней парты'):
         super().__init__(name, hp=4, attack=4, defense=2, exp=6)
         self.chose = random.randint(1, 3)
 
@@ -289,6 +289,53 @@ class Game_Main:
                 self.player = Warrior(name)
                 print(f'ВЫ СОЗДАЛИ ВОИНА С ИМЕНЕМ {self.player.name}')
                 break
-            else :
+            else:
                 print(f'Я СКАЗАЛ 123, а не {chose_player}!')
         print(self.player)
+
+    def spawn_enemy(self):
+        enemy = [EnemyOnBackOfTheClass, AngryTeacher]
+        chose_enemy = random.choice(enemy)
+        self.enemy = chose_enemy()
+        print(f'На вас {self.enemy.name} напал  и у него {self.enemy}')
+
+    def battle(self):
+        self.count += 1
+        print(f'битва началась {self.count}')
+        while self.player.is_alive() and self.enemy.is_alive():
+
+    def turn_player(self):
+        while True:
+
+            print('1 атака,2 просмотр инветаря,3 использовать предмет из инвентаря,4 побег')
+            player_chose = int(input('ведите число'))
+            if player_chose == 1:
+                dmg = self.player.attack_target(self.enemy)
+                print(f'Вы нанесли {dmg} урона!')
+                break
+            elif player_chose == 2:
+                self.player.show_inv()
+                continue
+            elif player_chose == 3:
+                self.use_item()
+                continue
+            elif player_chose == 4:
+                chans_esc = random.randint(1, 100)
+                if chans_esc <= 39:
+                    return True
+                break
+            elif player_chose == 2012:
+                self.enemy.hp = 0
+                continue
+            else:
+                print(f"Я СКАЗАЛ 1234, а не {player_chose}")
+                break
+
+    def turn_enemy(self):
+        pass
+
+    def use_item(self):
+        pass
+
+    def end_battle(self):
+        pass
