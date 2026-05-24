@@ -303,6 +303,13 @@ class Game_Main:
         self.count += 1
         print(f'битва началась {self.count}')
         while self.player.is_alive() and self.enemy.is_alive():
+            self.turn_player()
+            if self.enemy.is_alive():
+                self.turn_enemy()
+            if not self.enemy.is_alive() :
+                self.end_battle()
+            if not self.player.is_alive() :
+                break
 
     def turn_player(self):
         while True:
