@@ -64,6 +64,10 @@ class Character(ABC):
                 i += 1
                 print(f"{i}.{e}")
 
+    def add_item(self, item):
+        self._inventory.append(item)
+        print(f'вы получили по заслугам ({item.name})!')
+
     def __str__(self):
         return f'твоё имя - {self.name} у вас {self.hp}/{self.max_hp} здоровьья вы бьёте с силой {self.attack} у вас такая защита {self.defense} у вас столко опыта {self.exp}и вы на {self.level} левле'
 
@@ -306,9 +310,9 @@ class Game_Main:
             self.turn_player()
             if self.enemy.is_alive():
                 self.turn_enemy()
-            if not self.enemy.is_alive() :
+            if not self.enemy.is_alive():
                 self.end_battle()
-            if not self.player.is_alive() :
+            if not self.player.is_alive():
                 break
 
     def turn_player(self):
@@ -339,10 +343,44 @@ class Game_Main:
                 break
 
     def turn_enemy(self):
-        pass
+        dmg = self.enemy.attack_target(self.player)
+        print(f'{self.enemy.name} вам сносит {dmg} урона')
 
     def use_item(self):
-        pass
+        if not self.player._inventory:
+            print('вы бедьнее церковной мыши(у вас нечего нет)!')
+            return
+        print('выбирите предмет для использованя')
+        for i, item in enumerate(self.player._inventory, 1):
+            print(f'{i}.{item}')
+        player_chose = int(input('выбирите предмет для использованья (числом)')) - 1
+        if 0 <= player_chose < len(self.player._inventory):
+            item = self.player._inventory.index(player_chose)
+            if item.use(self.player):
+                self.player._inventory.pop(player_chose)
+        else:
+            print('Неправильно набран номер')
 
     def end_battle(self):
-        pass
+        self.count += 1
+        if self.player.is_alive():
+            print('вы победители! вы чемпионы!')
+            self.player.gain_exp(self.enemy.exp)
+            if random.randint(1, 100) <= 65:
+                loot = self.make_loot()
+                self.player.add_item(loot)
+        else:
+            self.game_over = True
+
+    def make_loot(self):
+        item = [HealingPotion(5),HealingPotion(3),HealingPotion(6),HealingPotion(4),HealingPotion(2),HealingPotion(1)]
+        if isinstance(self.player,Magician) :
+            item.append(ManaPotion(15))
+            item.append(ManaPotion(18))
+            item.append(ManaPotion(20))
+            item.append(ManaPotion(30))
+            item.append(ManaPotion(40))
+            item.append(ManaPotion(49))
+        chose = random.randint(1,100)
+        if chose  <= 60 :
+            return random.choice(item)
