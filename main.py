@@ -1,3 +1,4 @@
+
 import random
 import time
 from abc import ABC, abstractmethod
@@ -23,7 +24,7 @@ class Character(ABC):
     def take_damage(self, damage):
         dmg = max(1, damage - self.get_defense())
         self.hp -= dmg
-        print(f'у {self.name} остаётся {self.hp} здоровья')
+        print(f'У {self.name} остаётся {self.hp} здоровья')
         return dmg
 
     def get_defense(self):
@@ -37,7 +38,7 @@ class Character(ABC):
 
     def gain_exp(self, exp):
         self.exp += exp
-        print(f'персонаж {self.name} получает {exp} опыта и всего у него опыта {self.exp}')
+        print(f'Персонаж {self.name} получает {exp} \n опыта и всего у него опыта {self.exp}')
         if self.exp >= self.level * 50:
             self.level_up()
 
@@ -51,12 +52,12 @@ class Character(ABC):
         self.creet_chans += 0.05
 
         print(
-            f'персонаж {self.name} повышает уровень до {self.level} и повышает характеристики : здоровье {self.hp},урон{self.attack},зашита{self.defense}')
+            f'Персонаж {self.name} повышает уровень до {self.level} \n и повышает характеристики : \n здоровье {self.hp},\n урон{self.attack},\n зашита{self.defense}')
 
     def show_inv(self):
         i = 0
         if not self._inventory:
-            print('у вас нечего нет')
+            print('У вас нечего нет')
         else:
             for e in self._inventory:
                 i += 1
@@ -64,10 +65,10 @@ class Character(ABC):
 
     def add_item(self, item):
         self._inventory.append(item)
-        print(f'вы получили по заслугам ({item.name})!')
+        print(f'Вы получили по заслугам ({item.name})!')
 
     def __str__(self):
-        return f'имя - {self.name} у него {self.hp}/{self.max_hp} здоровьья он бьёт с силой {self.attack} у него такая защита {self.defense} у него столко опыта {self.exp}и он на {self.level} левле'
+        return f'Имя - {self.name} \n у него {self.hp}/{self.max_hp} здоровьья \n он бьёт с силой {self.attack} \n у него такая защита {self.defense} \n у него столко опыта {self.exp} и он на {self.level} левле'
 
 
 class Item(ABC):
@@ -80,7 +81,7 @@ class Item(ABC):
         pass
 
     def __str__(self):
-        return f'{self.name} {self.description}'
+        return f'{self.name} \n {self.description}'
 
 
 class Warrior(Character):
@@ -130,7 +131,7 @@ class Magician(Character):
             now_dmg = dmg
 
         if self.mana >= 50:
-            activation = input('включить супер атаку(1)')
+            activation = input('Включить супер атаку(1) ')
             if activation == 1:
                 now_dmg = dmg * 3
                 self.mana -= 50
@@ -142,7 +143,7 @@ class Magician(Character):
     def mana_regen(self):
         self.mana += 7
         if self.mana >= 50:
-            print(f'у игрока{self.name} {self.mana} маны')
+            print(f'У игрока{self.name} {self.mana} маны')
 
     # вызываем add_max_mana через проверку isinstance в функции битвы
     def add_max_mana(self):
@@ -154,7 +155,7 @@ class Magician(Character):
 
 class Archer(Character):
     def __init__(self, name):
-        super().__init__(name, hp=90, attack=4, defense=3)
+        super().__init__(name, hp=9, attack=4, defense=3)
         self.accuracy = 10
 
     def get_attack_power(self):
@@ -185,8 +186,8 @@ class Archer(Character):
 
 class HealingPotion(Item):
     def __init__(self, amount=4):
-        super().__init__(f'зелье здоровья (+{amount} hp)',
-                         f"Редкая гадость:  острый перец и фарментированые (гнилые) помидоры (восстанавливает {amount} hp).")
+        super().__init__(f'Зелье здоровья (+{amount} hp)',
+                         f'Редкая гадость:  острый перец и \n фарментированые (гнилые) помидоры \n (восстанавливает {amount} hp).')
         self.amount = amount
 
     def use(self, character):
@@ -200,7 +201,7 @@ class HealingPotion(Item):
 
 class ManaPotion(Item):
     def __init__(self, amount=4):
-        super().__init__(f'зелье маны (+{amount} hp)', f'востанавливает {amount} маны')
+        super().__init__(f'Зелье маны (+{amount} hp)', f'Востанавливает {amount} маны')
         self.amount = amount
 
     def use(self, character):
@@ -278,24 +279,32 @@ class Game_Main:
         self.count = 0
 
     def create_player(self):
-        print('создание персонажа из нечего (просто порох взорвался)')
+        print('Создание персонажа из нечего \n (просто порох взорвался)')
+        print()
 
         while True:
-            chose_player = input('ведите 1 чтобы выбрать лучника , 2 чтоб мага и 3 чтоб воина ')
+            chose_player = input('Введите \n 1 чтобы выбрать лучника, \n 2 чтоб мага и \n 3 чтоб воина ')
+            print()
             if chose_player == '1':
-                name = input('скажите ваше ИМЯ НЕМЕДЛЕНО')
+                name = input('Скажите ваше ИМЯ НЕМЕДЛЕНО ')
+                print()
                 self.player = Archer(name)
                 print(f'ВЫ СОЗДАЛИ ЛУЧНИКА С ИМЕНЕМ {self.player.name}')
+                print()
                 break
             elif chose_player == '2':
-                name = input('скажите ваше ИМЯ НЕМЕДЛЕНО')
+                name = input('Скажите ваше ИМЯ НЕМЕДЛЕНО ')
+                print()
                 self.player = Magician(name)
                 print(f'ВЫ СОЗДАЛИ МАГА С ИМЕНЕМ {self.player.name}')
+                print()
                 break
             elif chose_player == '3':
-                name = input('скажите ваше ИМЯ НЕМЕДЛЕНО')
+                name = input('Скажите ваше ИМЯ НЕМЕДЛЕНО ')
+                print()
                 self.player = Warrior(name)
                 print(f'ВЫ СОЗДАЛИ ВОИНА С ИМЕНЕМ {self.player.name}')
+                print()
                 break
             else:
                 print(f'Я СКАЗАЛ 1 или 2 или 3, а не {chose_player}!')
@@ -305,11 +314,12 @@ class Game_Main:
         enemy = [EnemyOnBackOfTheClass, AngryTeacher]
         chose_enemy = random.choice(enemy)
         self.enemy = chose_enemy()
-        print(f'На вас {self.enemy.name} напал  и у него {self.enemy}')
+        print()
+        print(f'На вас {self.enemy.name} напал  \n и у него {self.enemy}')
 
     def battle(self):
         self.count += 1
-        print(f'началась {self.count} битва')
+        print(f'Началась {self.count} битва')
         while self.player.is_alive() and self.enemy.is_alive():
             self.turn_player()
             if not self.enemy.is_alive():
@@ -320,12 +330,12 @@ class Game_Main:
     def turn_player(self):
         while True:
 
-            print('1 атака,2 просмотр инветаря,3 использовать предмет из инвентаря,4 побег')
-            player_chose = int(input('ведите число'))
+            print('1 атака, \n 2 просмотр инветаря, \n 3 использовать предмет из инвентаря, \n 4 побег')
+            player_chose = int(input('введите число '))
             if player_chose == 1:
                 dmg = self.player.attack_target(self.enemy)
                 print(f'Вы нанесли {dmg} урона!')
-                print(f'у {self.enemy.name} осталось {self.enemy.hp} из {self.enemy.max_hp}')
+                print(f'У {self.enemy.name} осталось {self.enemy.hp} из {self.enemy.max_hp}')
                 break
             elif player_chose == 2:
                 self.player.show_inv()
@@ -351,12 +361,12 @@ class Game_Main:
 
     def use_item(self):
         if not self.player._inventory:
-            print('вы бедьнее церковной мыши(у вас нечего нет)!')
+            print('Вы бедьнее церковной мыши \n (у вас нечего нет)!')
             return
-        print('выбирите предмет для использованя')
+        print('Выбирите предмет для использованя')
         for i, item in enumerate(self.player._inventory, 1):
             print(f'{i}.{item}')
-        player_chose = int(input('выбирите предмет для использованья (числом)')) - 1
+        player_chose = int(input('Выбирите предмет для использованья (числом) ')) - 1
         if 0 <= player_chose < len(self.player._inventory):
             item = self.player._inventory[player_chose]
             if item.use(self.player):
@@ -367,7 +377,7 @@ class Game_Main:
     def end_battle(self):
         self.count += 1
         if self.player.is_alive():
-            print('вы победители! вы чемпионы!')
+            print('Вы победители! \n вы чемпионы!')
             self.player.gain_exp(self.enemy.exp)
             if random.randint(1, 100) <= 65:
                 loot = self.make_loot()
@@ -388,15 +398,15 @@ class Game_Main:
         return random.choice(item)
 
     def run(self):
-        name = ['саша', 'Владимир']
-        print(f'привет {random.choice(name)} я знаю это ты')
+        name = ['Саша', 'Владимир']
+        print(f'Привет {random.choice(name)} я знаю это ты')
         self.create_player()
         while not self.game_over:
             self.spawn_enemy()
             self.battle()
             if not self.game_over:
                 print(
-                    f'ваш могучий воин прошёл {self.count} битв, поднял уровень до {self.player.level} и получил {self.player.exp} опыта из {self.player.level * 50}!')
+                    f'Ваш могучий воин прошёл {self.count} битв, \n поднял уровень до {self.player.level} и \n получил {self.player.exp} опыта из {self.player.level * 50}!')
         else:
             print(f'Игра окончена!!!')
 
