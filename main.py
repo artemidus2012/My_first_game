@@ -1,4 +1,3 @@
-
 import random
 import time
 from abc import ABC, abstractmethod
@@ -130,11 +129,14 @@ class Magician(Character):
         else:
             now_dmg = dmg
 
-        if self.mana >= 50:
-            activation = input('Включить супер атаку(1) ')
-            if activation == 1:
-                now_dmg = dmg * 3
-                self.mana -= 50
+        try:
+            if self.mana >= 50:
+                activation = input('Включить супер атаку(1) ')
+                if activation == 1:
+                    now_dmg = dmg * 3
+                    self.mana -= 50
+        except ValueError, TypeError:
+            print('ты профукался')
 
         self.mana_regen()
         target.take_damage(now_dmg)
@@ -283,8 +285,11 @@ class Game_Main:
         print()
 
         while True:
-            chose_player = input('Введите \n 1 чтобы выбрать лучника, \n 2 чтоб мага и \n 3 чтоб воина ')
-            print()
+            try:
+                chose_player = input('Введите \n 1 чтобы выбрать лучника, \n 2 чтоб мага и \n 3 чтоб воина ')
+                print()
+            except ValueError, TypeError:
+                print('ты профукался')
             if chose_player == '1':
                 name = input('Скажите ваше ИМЯ НЕМЕДЛЕНО ')
                 print()
